@@ -59,7 +59,7 @@ function request.new()
     body = nil,
     cookies = {},
     method = os.getenv("REQUEST_METHOD"),
-    path = os.getenv("URL"),
+    path = (string.split(os.getenv("URL"), "?", true))[1],
     query = parse_querystring(os.getenv("QUERY_STRING")),
     secure = os.getenv("HTTPS") == "on" and true or false,
   }
