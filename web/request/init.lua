@@ -59,7 +59,7 @@ function request.new()
     method = "",
     path = "",
     query = {},
-    secure = false,
+    secure = os.getenv("HTTPS") == "on" and true or false,
   }
 end
 
