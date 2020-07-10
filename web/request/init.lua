@@ -60,7 +60,7 @@ function request.new()
     cookies = {},
     method = os.getenv("REQUEST_METHOD"),
     path = os.getenv("URL"),
-    query = parse_querystring(os.getenv("QUESRY_STRING")),
+    query = parse_querystring(os.getenv("QUERY_STRING")),
     secure = os.getenv("HTTPS") == "on" and true or false,
   }
   return req
