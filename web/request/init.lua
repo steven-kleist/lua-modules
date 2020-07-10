@@ -34,10 +34,12 @@ require "strong"
 --------------------------------------------------------------------------------
 local function parse_querystring(str)
   local result = {}
-  local str1 = str:split("&", true)
-  for i,v in ipairs(str1) do
-    local str2 = v:split("=", true)
-    result[str2[1]] = str2[2]
+  if type(str) == "string" then
+    local str1 = str:split("&", true)
+    for i,v in ipairs(str1) do
+      local str2 = v:split("=", true)
+      result[str2[1]] = str2[2]
+    end
   end
   return result
 end
@@ -56,11 +58,12 @@ function request.new()
     params = {},
     body = nil,
     cookies = {},
-    method = "",
-    path = "",
-    query = {},
+    method = os.getenv("REQUEST_METHOD"),
+    path = os.getenv("URL"),
+    query = parse_querystring(os.getenv("QUESRY_STRING")),
     secure = os.getenv("HTTPS") == "on" and true or false,
   }
+  return req
 end
 
 
