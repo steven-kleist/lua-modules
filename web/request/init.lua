@@ -50,7 +50,7 @@ local function parse_headers(str)
   if type(str) == "string" then
     local str1 = str:lines(true)
     for i,v in ipairs(str1) do
-      local str2 = v:split("%:%s")
+      local str2 = v:split(": ", true)
       result[str2[1]] = (str2[2]):lstrip()
     end
   end
