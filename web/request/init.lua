@@ -60,13 +60,36 @@ local function parse_headers(str)
 end
 
 
+function parse_body(str)
+  local result = {}
+  if type(str) == "string" and #str >= 1 then
+    local body_type = os.getenv("CONTENT_TYPE")
+    
+    -- parsing application/x-www-form-urlencoded data
+    if body_type == "application/x-www-form-urlencoded" then
+      local str1 = str:split("&", true)
+      for i,v in ipairs(str1) do
+        local str2 = v:split("=", true)
+        result[str2[1]] = str2[2]
+      end
+    
+    elseif body_type == "text/json" then
+      local json = require "json"
+      result = json.decode(str)
+    end
+    
+    
+  end
+  return result
+end
+
 --------------------------------------------------------------------------------
 -- Instance functions
 --------------------------------------------------------------------------------
 function request.new()
   local req = {
     headers = parse_headers(os.getenv("ALL_HTTP")),
-    body = nil,
+    body = os.getenv("REQUEST_METHOD") == "POST" and parse_body(io.read("*all")) or nil,
     cookies = {},
     method = os.getenv("REQUEST_METHOD"),
     path = (string.split(os.getenv("URL"), "?", true))[1],
