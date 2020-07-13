@@ -48,7 +48,7 @@ end
 local function parse_headers(str)
   local result = {}
   if type(str) == "string" then
-    local str1 = str:split("%r|%n|%r%n")
+    local str1 = str:split("%n")
     for i,v in ipairs(str1) do
       local str2 = v:split(":", true)
       result[str2[1]] = (str2[2]):lstrip()
