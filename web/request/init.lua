@@ -64,6 +64,7 @@ function parse_body(str)
   local result = {}
   if type(str) == "string" and #str >= 1 then
     local body_type = os.getenv("CONTENT_TYPE")
+    local body_parts = body_type:split("%;%s?")
     
     -- parsing application/x-www-form-urlencoded data
     if body_type == "application/x-www-form-urlencoded" then
@@ -72,6 +73,9 @@ function parse_body(str)
         local str2 = v:split("=", true)
         result[str2[1]] = str2[2]
       end
+    
+    elseif body_parts[1] == "multipart/form-data" then
+    
     
     elseif body_type == "text/json" then
       local json = require "json"
