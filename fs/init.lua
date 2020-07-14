@@ -78,9 +78,11 @@ function fs.currentdir()
   end
 end
 
-function fs.dir(path)
+function fs.dir(path, recursive)
+  local recurse = recursive and "/S" or ""
   if isWindows then
-    local result = io.popen([[@dir /B "]] .. path .. [["]]):read("*a"):gsub("%s+$", "")
+    local cmd = ('@dir /B %s "%s"'):format(recurse, path)
+    local result = io.popen(cmd):read("*a"):gsub("%s+$", "")
     return result:lines(true)
   end
 end
