@@ -81,10 +81,14 @@ end
 
 function fs.dir(path, recursive)
   local recurse = recursive and "/S" or ""
+  local result = {}
   if isWindows then
     local cmd = ('@dir /B %s "%s"'):format(recurse, path)
-    local result = io.popen(cmd):read("*a"):gsub("%s+$", "")
-    return result:lines(true)
+    local entries = io.popen(cmd):read("*a"):gsub("%s+$", "")
+    for i,v in ipairs(entries:lines(true)) do
+      if #v >= 1 then table.insert(result, v) end
+    end
+    return result
   end
 end
 
@@ -153,11 +157,47 @@ function fs.find(name)
   end
 end
 
-
+---
+-- @scope module {fs}
+-- @desc Returns the basepath of {file}
+-- @params {file:string} File or folder path to get basepath from
+-- @returns {string|nil} The basepath or nil on error.
+--
 function fs.basepath(file)
   local match = string.match(file, "^(.*)".. sep .. ".*$", 1)
   return match
 end
+
+
+function fs.exist(path)
+  if isWindows then
+    local cmd = ('@if exist "%s" (@echo/true) else (@echo/false)'):format(path)
+    local result = io.popen(cmd):read("*l")
+    return result == "true" and true or false
+  end
+  return nil
+end
+
+
+function fs.tryopen(path)
+  local res = io.open(path, "rb")
+  if res ~= nil then res:close() end
+  return res and true or false
+end
+
+
+function fs.isdir(path)
+  local exists = fs.exist(path)
+  if exists then
+    if fs.tryopen(path) then
+      return false
+    else
+      return true
+    end
+  end
+  return false
+end
+
 
 -------------------------------------------------------------------------------
 -- Returning insatnce
