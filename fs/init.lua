@@ -34,6 +34,7 @@ require "strong"
 
 -- Detecting platform and runtime
 local isWindows = package.config:sub(1,1) == "\\"
+local sep = package.config:sub(1, 1)
 local isLuaScript = _G.WScript and true or false
 
 local obj = {}
@@ -152,6 +153,11 @@ function fs.find(name)
   end
 end
 
+
+function fs.basepath(file)
+  local match = string.match(file, "^(.*)".. sep .. ".*$", 1)
+  return match
+end
 
 -------------------------------------------------------------------------------
 -- Returning insatnce
