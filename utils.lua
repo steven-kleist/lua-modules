@@ -12,7 +12,10 @@ for i,v in ipairs(items) do
     
     local file = ([[.\%s\%s_test.lua]]):format(v, v)
     if fs.exist(file) then
-      dofile(file)
+      
+      print(file, fs.attributes(file, "modification"))
+      
+--      dofile(file)
     end
     
   end

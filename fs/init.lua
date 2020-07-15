@@ -29,13 +29,14 @@ local fs = {
 
 
 require "strong"
+local platform = require "platform"
 
 
 
 -- Detecting platform and runtime
-local isWindows = package.config:sub(1,1) == "\\"
-local sep = package.config:sub(1, 1)
-local isLuaScript = _G.WScript and true or false
+local isWindows = platform.isWindows
+local sep = platform.sep
+local isLuaScript = platform.engine.host == "wsh" and true or false
 
 local obj = {}
 if isLuaScript then
@@ -49,7 +50,56 @@ end
 -------------------------------------------------------------------------------
 
 -- Returns a table with attributes
-function fs.attributes() end
+function fs.attributes(path, request_type)
+  if type(request_type) == "string" then
+    
+    -- Check for mode (file, directory)
+    if request_type == "mode" then
+      
+      if fs.exist(path) then
+        
+        if fs.isdir(path) then
+          return "directory"
+        else
+          return "file"
+        end
+        
+      end
+      return nil, [["%s" not found.]] % path
+      
+    end
+    
+    -- Use COM-Objects
+    if isLuaScript then
+      
+      -- Check for lastModified
+      if request_type == "modification" then
+        local item = nil
+        if fs.isdir(path) then
+          item = obj.fso:GetFolder(path)
+        else
+          item = obj.fso:GetFile(path)
+        end
+        return item.DateLastModified
+      end
+      
+      -- Check for last Accessed
+      if request_type == "access" then
+        local item = nil
+        if fs.isdir(path) then
+          item = obj.fso:GetFolder(path)
+        else
+          item = obj.fso:GetFile(path)
+        end
+        return item.DateLastAccessed
+      end
+      
+    end
+    
+    
+    return nil, [[requested attribute "%s" is not supported.]] % request_type
+  end
+end
 
 
 function fs.chdir(path)
@@ -83,8 +133,8 @@ function fs.dir(path, recursive)
   local recurse = recursive and "/S" or ""
   local result = {}
   if isWindows then
-    local cmd = ('@dir /B %s "%s"'):format(recurse, path)
-    local entries = io.popen(cmd):read("*a"):gsub("%s+$", "")
+    local cmd = '@dir /B %s "%s"' % {recurse, path}
+    local entries = io.popen(cmd):read("*a") - "%s+$"
     for i,v in ipairs(entries:lines(true)) do
       if #v >= 1 then table.insert(result, v) end
     end
@@ -100,10 +150,10 @@ function fs.mkdir(path)
   local success = false
   if isWindows then
     if isLuaScript then
-      local code = os.execute([[cmd /c @mkdir "]] .. path .. [["]])
+      local code = os.execute([[cmd /c @mkdir "%s"]] % path)
       if code == 0 then success = true end
     else
-      local ok, t, code = os.execute([[cmd /c @mkdir "]] .. path .. [["]])
+      local ok, t, code = os.execute([[cmd /c @mkdir "%s"]] % path)
       if ok and code == 0 then success = true end
     end
   end
@@ -115,10 +165,10 @@ function fs.rmdir(path)
   local success = false
   if isWindows then
     if isLuaScript then
-      local code = os.execute([[cmd /c @rmdir /S /Q "]] .. path .. [["]])
+      local code = os.execute([[cmd /c @rmdir /S /Q "%s"]] % path)
       if code == 0 then success = true end
     else
-      local ok, t, code = os.execute([[cmd /c @rmdir /S /Q "]] .. path .. [["]])
+      local ok, t, code = os.execute([[cmd /c @rmdir /S /Q "%s"]] % path)
       if ok and code == 0 then success = true end
     end
   end
@@ -135,7 +185,7 @@ function fs.touch(path)
     local file = io.open(path)
     if file then
       file:close()
-      local result = io.popen([[@copy /b "]]..path..[["+,, "]]..path..[["]])
+      local result = io.popen([[@copy /b "%s"+,, "%s"]] % {path, path})
       result:close()
       
     else
@@ -152,7 +202,7 @@ function fs.unlock() end
 --- Finds executable in %PATH%
 function fs.find(name)
   if isWindows then
-    local result = io.popen([[@where ]] .. name):read("*a"):gsub("%s+$", "")
+    local result = io.popen([[@where %s]] % name):read("*a") - "%s+$"
     return result:lines(true)
   end
 end
@@ -164,14 +214,14 @@ end
 -- @returns {string|nil} The basepath or nil on error.
 --
 function fs.basepath(file)
-  local match = string.match(file, "^(.*)".. sep .. ".*$", 1)
+  local match = string.match(file, "^(.*)%s.*$" % sep, 1)
   return match
 end
 
 
 function fs.exist(path)
   if isWindows then
-    local cmd = ('@if exist "%s" (@echo/true) else (@echo/false)'):format(path)
+    local cmd = '@if exist "%s" (@echo/true) else (@echo/false)' % path
     local result = io.popen(cmd):read("*l")
     return result == "true" and true or false
   end
