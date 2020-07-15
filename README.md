@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/stevenkl/lua-modules)
+
 # lua-modules
 Dieses Git-Repository enthält eine Sammlung von nützlichen Lua Modulen, welche ohne weitere Kompilierung genutzt werden können.
 
