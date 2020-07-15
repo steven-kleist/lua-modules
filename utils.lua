@@ -3,16 +3,18 @@
 
 -- Get all test files
 local fs = require "fs"
-local inspect = require "inspect"
 
-local files = fs.dir("web", true)
+local items = fs.dir(".")
 
-print(('Found %d items.'):format(#files))
-print(inspect(files))
-
-print(fs.isdir(".\\web\\request"))
-
-for i,v in ipairs(files) do
-  print(inspect(fs.basepath(v)))
+for i,v in ipairs(items) do
+  
+  if fs.isdir(v) then
+    
+    local file = ([[.\%s\%s_test.lua]]):format(v, v)
+    if fs.exist(file) then
+      dofile(file)
+    end
+    
+  end
 end
 
