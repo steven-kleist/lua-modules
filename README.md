@@ -4,8 +4,16 @@
 Dieses Git-Repository enthält eine Sammlung von nützlichen Lua Modulen, welche ohne weitere Kompilierung genutzt werden können.
 
 
-
 [TOC]
+
+
+## Lua Implementierungen
+Aktuell stehen folgende Lua Implementierungen im Focus:
+* PUC Lua 5.1-5.3
+* LuaJit v.2.0.9 (Native, Lua 5.1)
+* LuaScript (Windows Scripting Host, LuaJit 2.0.9)
+* LuaScript (Notepad++, Lua 5.3)
+* LuaJ v.3.0.1 (JVM, Lua 5.2)
 
 
 ## Voraussetzung für Module
@@ -27,6 +35,7 @@ Das Skript `utils.lua` dient zur validierung der einzelnen Module. Folgende Funk
 * crypto
   * md5
   * [sha1](./crypto/sha1/README.md)
+* dotenv
 * etlua
 * fs
 * inspect
