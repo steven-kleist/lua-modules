@@ -32,13 +32,23 @@ require "strong"
 --------------------------------------------------------------------------------
 -- local functions
 --------------------------------------------------------------------------------
+local function hex_to_char(x)
+  return string.char(tonumber(x, 16))
+end
+
+
+local function unescape(url)
+  return url:gsub("%%(%x%x)", hex_to_char)
+end
+
+
 local function parse_querystring(str)
   local result = {}
   if type(str) == "string" then
     local str1 = str:split("&", true)
     for i,v in ipairs(str1) do
       local str2 = v:split("=", true)
-      result[str2[1]] = str2[2]
+      result[str2[1]] = unescape(str2[2])
     end
   end
   return result
@@ -60,7 +70,7 @@ local function parse_headers(str)
 end
 
 
-function parse_body(str)
+local function parse_body(str)
   local result = {}
   if type(str) == "string" and #str >= 1 then
     local body_type = os.getenv("CONTENT_TYPE")
@@ -71,7 +81,7 @@ function parse_body(str)
       local str1 = str:split("&", true)
       for i,v in ipairs(str1) do
         local str2 = v:split("=", true)
-        result[str2[1]] = str2[2]
+        result[str2[1]] = unescape(str2[2])
       end
     
     elseif body_parts[1] == "multipart/form-data" then
@@ -86,6 +96,7 @@ function parse_body(str)
   end
   return result
 end
+
 
 --------------------------------------------------------------------------------
 -- Instance functions
