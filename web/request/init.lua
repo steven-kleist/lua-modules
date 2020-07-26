@@ -87,7 +87,7 @@ local function parse_body(str)
     elseif body_parts[1] == "multipart/form-data" then
     
     
-    elseif body_type == "text/json" then
+    elseif body_type == "text/json" or body_type == "application/json" then
       local json = require "json"
       result = json.decode(str)
     end
