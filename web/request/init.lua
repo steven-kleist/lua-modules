@@ -55,6 +55,20 @@ local function parse_querystring(str)
 end
 
 
+local function parse_cookies(str)
+  local result = {}
+  if type(str) == "string" then
+    local str1 = str:split("; ", true)
+    for i,v in ipairs(str1) do
+      local str2 = v:split("=", true)
+      result[str2[1]] = str2[2]
+    end
+  end
+  return result
+end
+
+
+
 local function parse_headers(str)
   local result = {}
   if type(str) == "string" then
@@ -105,7 +119,7 @@ function request.new()
   local req = {
     headers = parse_headers(os.getenv("ALL_HTTP")),
     body = os.getenv("REQUEST_METHOD") == "POST" and parse_body(io.read("*all")) or nil,
-    cookies = {},
+    cookies = parse_cookies(os.getenv("HTTP_COOKIE")),
     method = os.getenv("REQUEST_METHOD"),
     path = (string.split(os.getenv("URL"), "?", true))[1],
     query = parse_querystring(os.getenv("QUERY_STRING")),
