@@ -15,7 +15,7 @@ for i,v in ipairs(items) do
       
       print(file, fs.attributes(file, "modification"))
       
---      dofile(file)
+      dofile(file)
     end
     
   end
