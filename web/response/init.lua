@@ -145,6 +145,11 @@ function response:header(name, value)
 end
 
 
+function response:redirect(url, code)
+  code = code or 302
+  self:status(code):header("Location:" .. url):send()
+end
+
 
 
 -------------------------------------------------------------------------------
