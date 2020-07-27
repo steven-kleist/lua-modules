@@ -147,7 +147,7 @@ end
 
 function response:redirect(url, code)
   code = code or 302
-  self:status(code):header("Location", url):send()
+  return self:status(code):header("Location", url):send()
 end
 
 
