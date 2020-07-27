@@ -11,6 +11,7 @@ local etlua = require "etlua"
 
 local http_status = {
   [200] = "OK",
+  [404] = "Not Found",
 }
 
 
@@ -28,7 +29,7 @@ local response_ = {
 -- member functions
 -------------------------------------------------------------------------------
 function response:send()
-  local data = {}
+  local data = ""
   
   data = table.concat({
     response_.buffer.status,
@@ -69,6 +70,7 @@ function response:json(content)
   else
     data = content
   end
+  self:header("Content-Type", "application/json")
   table.insert(response_.buffer.body, data)
   
   return self
