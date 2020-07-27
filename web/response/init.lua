@@ -36,7 +36,7 @@ function response:send()
     "",
     (table.concat(response_.buffer.body, "\r\n"))
   }, "\r\n")
-  io.write(data)
+  return data
 end
 
 
