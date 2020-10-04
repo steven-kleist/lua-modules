@@ -21,3 +21,4 @@ for i,v in ipairs(items) do
   end
 end
 
+print("All done.")
