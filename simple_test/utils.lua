@@ -1,8 +1,8 @@
-function is_table(obj)
+local function is_table(obj)
   return type(obj) == 'table'
 end
 
-function is_deep_equal(a, b)
+local function is_deep_equal(a, b)
   if is_table(a) and is_table(b) then
     if (#a ~= #b) then return false end
 
